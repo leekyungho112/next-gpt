@@ -1,8 +1,54 @@
-import { integer, pgTable, varchar } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { uuid, text, pgTable, timestamp } from "drizzle-orm/pg-core";
 
-export const usersTable = pgTable("users", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar({ length: 255 }).notNull(),
-  age: integer().notNull(),
-  email: varchar({ length: 255 }).notNull().unique(),
+export const user = pgTable("user", {
+  id: uuid("id").defaultRandom().notNull().primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const userRelations = relations(user, ({ many }) => ({
+  conversations: many(conversation),
+}));
+
+export const conversation = pgTable("conversation", {
+  id: uuid("id").defaultRandom().notNull().primaryKey(),
+  name: text("name"),
+  userId: uuid("userId")
+    .references(() => user.id, { onDelete: "cascade" })
+    .notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const conversationRelations = relations(
+  conversation,
+  ({ one, many }) => ({
+    user: one(user, {
+      fields: [conversation.userId],
+      references: [user.id],
+    }),
+    messages: many(message),
+  })
+);
+
+export const message = pgTable("message", {
+  id: uuid("id").defaultRandom().notNull().primaryKey(),
+  content: text("content"),
+  role: text("role").$type<"user" | "assistant">(),
+  conversationId: uuid("conversationId")
+    .references(() => conversation.id, { onDelete: "cascade" })
+    .notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const messageRelations = relations(message, ({ one }) => ({
+  conversation: one(conversation, {
+    fields: [message.conversationId],
+    references: [conversation.id],
+  }),
+}));
