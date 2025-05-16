@@ -1,7 +1,7 @@
+import Link from "next/link";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -15,16 +15,15 @@ type Props = {
 
 export function FormCard({ title, footer, children }: Props) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
+    <Card className="w-[500px] flex flex-col items-center border">
+      <CardHeader className="w-full text-center">
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
-      <CardContent>
-        <p>Card Content</p>
-      </CardContent>
+      <CardContent className="w-[90%]">{children}</CardContent>
       <CardFooter>
-        <p>Card Footer</p>
+        <Link href={footer.href} className="text-sm text-blue-500">
+          {footer.label}
+        </Link>
       </CardFooter>
     </Card>
   );
