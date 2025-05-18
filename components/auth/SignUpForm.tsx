@@ -1,9 +1,15 @@
+"use client";
+import { ChangeEvent } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { FormCard } from "./FormCard";
 import { Submit } from "./Submit";
 
 const SignUpForm = () => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    console.log(name, value);
+  };
   return (
     <FormCard
       title="회원가입"
@@ -19,7 +25,7 @@ const SignUpForm = () => {
             id="name"
             name="name"
             placeholder="이름을 입력하세요"
-            required
+            onChange={handleChange}
           />
         </div>
         <div className="space-y-1">
@@ -29,7 +35,7 @@ const SignUpForm = () => {
             name="email"
             type="email"
             placeholder="example@example.com"
-            required
+            onChange={handleChange}
           />
         </div>
         <div className="space-y-1">
@@ -39,7 +45,7 @@ const SignUpForm = () => {
             name="password"
             type="password"
             placeholder="**********"
-            required
+            onChange={handleChange}
           />
         </div>
         <Submit className="w-full">회원가입</Submit>
